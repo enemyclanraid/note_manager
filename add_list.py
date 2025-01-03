@@ -19,7 +19,7 @@ username = input("Введите имя пользователя: ")
 title1 = input("Введите заголовок заметки 1: ")
 title2 = input("Введите заголовок заметки 2: ")
 title3 = input("Введите заголовок заметки 3: ")
-title_sp = [title1, title2, title3 ]
+titles = [title1, title2, title3 ]
 content = input("Введите описание заметки: ")
 status = input("Введите статус заметки: ")
 
@@ -37,7 +37,7 @@ temp_issue_date = f"{day_issue} {months[month_issue]}"
 
 # Выводим значения переменных
 print("\nИмя пользователя:", username)
-print("Заголовки заметок:", title_sp)
+print("Заголовки заметок:", titles)
 print("Описание заметки:", content)
 print("Статус заметки:", status)
 print("Дата создания заметки:", temp_created_date)
