@@ -1,4 +1,3 @@
-# Словарь для отображения месяцев текстом
 months = {
     "01": "января",
     "02": "февраля",
@@ -14,25 +13,20 @@ months = {
     "12": "декабря",
 }
 
-# Получаем данные от пользователя
 username = input("Введите имя пользователя: ")
 title = input("Введите заголовок заметки: ")
 content = input("Введите описание заметки: ")
 status = input("Введите статус заметки: ")
 
-# Запрашиваем даты у пользователя с указанием формата
 created_date = input("Введите дату создания заметки (дд-мм-гггг): ")
 issue_date = input("Введите дату истечения заметки (дд-мм-гггг): ")
 
-# Временные переменные
 day_created, month_created = created_date[:2], created_date[3:5]
 day_issue, month_issue = issue_date[:2], issue_date[3:5]
 
-# Преобразуем месяц в текст
 temp_created_date = f"{day_created} {months[month_created]}"
 temp_issue_date = f"{day_issue} {months[month_issue]}"
 
-# Выводим значения переменных
 print("\nИмя пользователя:", username)
 print("Заголовок заметки:", title)
 print("Описание заметки:", content)
