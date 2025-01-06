@@ -38,11 +38,23 @@ def main():
         if title in titles:
             print("Этот заголовок уже существует. Пожалуйста, введите другой.")
         else:
-            titles.add(title)  # Добавляем заголовок в множество
+            titles.add(title)
 
     # Ввод основной информации о заметке
     content = input("Введите описание заметки: ")
-    status = input("Введите статус заметки: ")
+    status = "в процессе"
+
+    print("\nВыберите начальный статус заметки:")
+    for key, value in {"1": "выполнено", "2": "в процессе", "3": "отложено"}.items():
+        print(f"{key}. {value}")
+
+    while True:
+        choice = input("Ваш выбор: ").strip()
+        if choice in {"1", "2", "3"}:
+            status = {"1": "выполнено", "2": "в процессе", "3": "отложено"}[choice]
+            break
+        else:
+            print("Некорректный выбор. Пожалуйста, выберите число от 1 до 3.")
 
     # Ввод дат создания и истечения заметки
     created_date = input("Введите дату создания заметки (дд-мм-гггг): ")
@@ -63,7 +75,7 @@ def main():
         status,
         temp_created_date,
         temp_issue_date,
-        list(titles)  # Преобразуем множество обратно в список для вывода
+        list(titles)
     ]
 
     # Вход в ждущий режим выполнения команд
@@ -79,7 +91,6 @@ def main():
             print("Редактирование заметки...")
             username = input("Введите новое имя пользователя (текущая: {}): ".format(note[0])) or note[0]
             content = input("Введите новое содержание заметки (текущее: {}): ".format(note[1])) or note[1]
-            status = input("Введите новый статус заметки (текущий: {}): ".format(note[2])) or note[2]
 
             # Ввод новых дат
             created_date = input("Введите новую дату создания заметки (дд-мм-гггг, текущее: {}): ".format(note[3])) or \
@@ -111,14 +122,36 @@ def main():
                     break
                 new_titles.add(title)
 
-            note[5] = list(new_titles)  # Обновляем заголовки
+            note[5] = list(new_titles)
 
             print("Заметка успешно обновлена.")
 
         elif command == 'status':
-            new_status = input("Введите новый статус: ")
-            note[2] = new_status
-            print("Статус успешно изменен на:", note[2])
+            """Функция для изменения статуса заметки."""
+            current_status = note[2]
+            print(f"\nТекущий статус заметки: \"{current_status}\"")
+
+            while True:
+                """Функция для отображения меню статусов."""
+                print("\nВыберите новый статус заметки:")
+                print("1. выполнено")
+                print("2. в процессе")
+                print("3. отложено")
+                choice = input("Ваш выбор: ").strip()
+
+                if choice == "1":
+                    note[2] = "выполнено"
+                    break
+                elif choice == "2":
+                    note[2] = "в процессе"
+                    break
+                elif choice == "3":
+                    note[2] = "отложено"
+                    break
+                else:
+                    print("Некорректный выбор. Пожалуйста, введите число от 1 до 3.")
+
+            print(f"Статус заметки успешно обновлён на: \"{note[2]}\"")
 
         elif command == 'help':
             print("\nДоступные команды:")
