@@ -39,6 +39,17 @@ def format_duration(duration):
     seconds = seconds % 60
     return f"{years} лет, {months} месяцев, {weeks} недель, {days} дней, {hours} часов, {minutes} минут, {seconds} секунд"
 
+def input_valid_date(prompt):
+    """Запрашивает ввод даты у пользователя и проверяет ее корректность."""
+    while True:
+        date_str = input(prompt)
+        try:
+            # Проверяем дату с форматом дд-мм-гггг
+            date_obj = datetime.strptime(date_str, "%d-%m-%Y")
+            return date_str  # Возвращаем строку, если дата корректна
+        except ValueError:
+            print("Некорректный формат даты или несуществующая дата. Попробуйте снова (формат: дд-мм-гггг).")
+
 def check_expiry(issue_date):
     """Проверяет, истек ли срок выполнения заметки."""
     current_date = datetime.now()
@@ -98,8 +109,8 @@ def main():
             print("Некорректный выбор. Пожалуйста, выберите один из предложенных вариантов.")
 
     # Ввод дат создания и истечения заметки
-    created_date = input("Введите дату создания заметки (дд-мм-гггг): ")
-    issue_date = input("Введите дату истечения заметки (дд-мм-гггг): ")
+    created_date = input_valid_date("Введите дату создания заметки (дд-мм-гггг): ")
+    issue_date = input_valid_date("Введите дату истечения заметки (дд-мм-гггг): ")
 
     # Разбор введенных дат
     day_created, month_created = created_date[:2], created_date[3:5]
