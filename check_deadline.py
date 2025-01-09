@@ -1,3 +1,6 @@
+import locale
+from datetime import datetime
+
 # Словарь для преобразования числового представления месяца в текстовое
 months = {
     "01": "января",
@@ -14,7 +17,21 @@ months = {
     "12": "декабря",
 }
 
-from datetime import datetime, timedelta
+
+# Устанавливаем локаль на русский язык
+locale.setlocale(locale.LC_TIME, 'ru_RU')
+
+# Получаем текущую дату и время
+now = datetime.now()
+
+# Форматируем вывод
+formatted_date = now.strftime("%d-%m-%Y")
+# ANSI escape code для зеленого цвета
+GREEN = "\033[92m"
+RESET = "\033[0m"  # Сброс цвета
+# Выводим результат в консоль
+print(GREEN + "Текущая дата: " + formatted_date + RESET)
+
 
 def display_note_info(note):
     """Функция для отображения информации о заметке."""
@@ -55,26 +72,36 @@ def check_expiry(issue_date):
     current_date = datetime.now()
     issue_datetime = datetime.strptime(issue_date, "%d-%m-%Y")
 
+    # ANSI escape codes для цветов
+    RED = "\033[31m"  # Красный цвет
+    GREEN = "\033[92m"  # Зеленый цвет
+    RESET = "\033[0m"  # Сброс цвета
+
     if current_date > issue_datetime:
         expired_duration = current_date - issue_datetime
-        print("\nСрок выполнения заметки истёк!")
-        print("Время, прошедшее с истечения срока:", format_duration(expired_duration))
+        print(RED + "\nСрок выполнения заметки истёк!" + RESET)
+        print(RED + "Внимание! Дедлайн истёк: " + format_duration(expired_duration) + RESET)
     else:
         remaining_duration = issue_datetime - current_date
-        print("\nСрок выполнения заметки ещё не истёк. Отобразить оставшееся время можно введя команду time")
-        print("Оставшееся время до истечения срока:", format_duration(remaining_duration))
+        print(GREEN + "\nСрок выполнения заметки ещё не истёк. Отобразить оставшееся время можно введя команду time" + RESET)
+        print(GREEN + "Оставшееся время до истечения срока: " + format_duration(remaining_duration) + RESET)
 
 def calculate_remaining_time(issue_date):
     """Вычисляет и возвращает оставшееся время до истечения срока."""
     current_date = datetime.now()
     issue_datetime = datetime.strptime(issue_date, "%d-%m-%Y")
 
+    # ANSI escape codes для цветов
+    RED = "\033[31m"  # Красный цвет
+    GREEN = "\033[92m"  # Зеленый цвет
+    RESET = "\033[0m"  # Сброс цвета
+
     if current_date > issue_datetime:
         expired_duration = current_date - issue_datetime
-        return f"Срок выполнения истёк {format_duration(expired_duration)} назад."
+        return RED + f"Внимание! Дедлайн истёк: {format_duration(expired_duration)} назад." + RESET
     else:
         remaining_duration = issue_datetime - current_date
-        return f"Оставшееся время до истечения срока: {format_duration(remaining_duration)}."
+        return GREEN + f"Оставшееся время до истечения срока: {format_duration(remaining_duration)}." + RESET
 
 def main():
     # Запрос имени пользователя
@@ -96,7 +123,12 @@ def main():
     # Ввод основной информации о заметке
     content = input("Введите описание заметки: ")
     print("\nВыберите статус заметки:")
-    status_dict = {"1": "выполнено", "2": "в процессе", "3": "отложено"}
+    status_dict = {
+        "1": "\033[92mвыполнено\033[0m",  # Зеленый цвет для статуса "выполнено"
+        "2": "\033[93mв процессе\033[0m",  # Желтый цвет для статуса "в процессе"
+        "3": "\033[31mотложено\033[0m"  # Оранжевый цвет для статуса "отложено"
+    }
+
     for key, value in status_dict.items():
         print(f"{key}. {value}")
 
@@ -141,45 +173,42 @@ def main():
     while True:
         command = input("\nВведите команду (или 'help' для справки): ").strip().lower()
 
+
         if command == 'list':
             display_note_info(note)
 
+
         elif command == 'retry':
             print("Редактирование заметки...")
+            # Получаем новое имя пользователя и содержание заметки
             username = input("Введите новое имя пользователя (текущая: {}): ".format(note[0])) or note[0]
             content = input("Введите новое содержание заметки (текущее: {}): ".format(note[1])) or note[1]
 
-            # Ввод новых дат
-            created_date = input("Введите новую дату создания заметки (дд-мм-гггг, текущее: {}): ".format(note[3])) or \
-                           note[3]
-            issue_date = input("Введите новую дату истечения заметки (дд-мм-гггг, текущее: {}): ".format(note[4])) or \
-                         note[4]
-
-            # Разбор введенных дат
-            day_created, month_created = created_date[:2], created_date[3:5]
-            day_issue, month_issue = issue_date[:2], issue_date[3:5]
+            # Ввод новых дат с проверкой корректности
+            created_date = input_valid_date(
+                "Введите новую дату создания заметки (дд-мм-гггг, текущее: {}): ".format(note[3])) or note[3]
+            issue_date = input_valid_date(
+                "Введите новую дату истечения заметки (дд-мм-гггг, текущее: {}): ".format(note[4])) or note[4]
 
             # Форматирование дат с использованием словаря months
-            temp_created_date = f"{day_created} {months[month_created]}"
-            temp_issue_date = f"{day_issue} {months[month_issue]}"
+            note[3] = f"{created_date[:2]} {months[created_date[3:5]]}"
+            note[4] = f"{issue_date[:2]} {months[issue_date[3:5]]}"
 
-            # Обновление заметки
-            note[0] = username
-            note[1] = content
-            note[3] = temp_created_date
-            note[4] = temp_issue_date
-
-            # Заголовки могут быть изменены или оставлены без изменений
+            # Обновление заголовков
             new_titles = set()
-
             while True:
+
                 title = input("Введите новый заголовок (или оставьте пустым для завершения): ")
                 if title == "":
                     break
+
                 new_titles.add(title)
 
             note[5] = list(new_titles)
 
+            # Обновление заметки
+            note[0] = username
+            note[1] = content
             print("Заметка успешно обновлена.")
 
         elif command == 'status':
@@ -200,14 +229,20 @@ def main():
 
             print(f"Статус заметки успешно обновлён на: \"{note[2]}\"")
 
-        elif command == 'help':
-            print("\nДоступные команды:")
-            print("list - отобразить всю информацию о заметке.")
-            print("retry - редактировать содержание и статус заметки.")
-            print("status - изменить статус заметки.")
-            print("help - отобразить список доступных команд.")
-            print("time - отобразить оставшееся время до истечения срока заметки.")
-            print("exit - выйти из программы.")
+        if command == 'help':
+
+            print("\nДоступные команды:\n")
+            print("Основные команды:")
+            print("  list   : отобразить всю информацию о заметке.")
+            print("  retry  : редактировать содержание и статус заметки.")
+            print("  status  : изменить статус заметки.")
+            print()
+            print("Информация о времени:")
+            print("  time   : отобразить оставшееся время до истечения срока заметки.")
+            print()
+            print("Помощь и выход:")
+            print("  help   : отобразить список доступных команд.")
+            print("  exit   : выйти из программы.")
 
         elif command == 'time':
             remaining_time_message = calculate_remaining_time(issue_date)
