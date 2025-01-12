@@ -175,9 +175,22 @@ def main():
 
         if command == 'create':
             print("\nСоздание новой заметки...")
-            note = create_note()
-            notes.append(note)
-            print("Заметка успешно создана.")
+            while True:
+                note = create_note()
+                notes.append(note)
+                print("Заметка успешно создана.")
+
+                while True:
+                    add_more = input("Хотите добавить ещё одну заметку? (да/нет): ").lower()
+                    if add_more in ['да', 'нет']:
+                        break
+                    print("Пожалуйста, введите 'да' или 'нет'.")
+
+                if add_more == 'нет':
+                    break
+
+            print("Создание заметок завершено.")
+
 
         elif command == 'list':
             if not notes:
