@@ -75,9 +75,13 @@ def check_expiry(issue_date):
     # ANSI escape codes для цветов
     RED = "\033[31m"  # Красный цвет
     GREEN = "\033[92m"  # Зеленый цвет
+    YELLOW = "\033[93m"  # Желтый цвет
     RESET = "\033[0m"  # Сброс цвета
 
-    if current_date > issue_datetime:
+    # Сравниваем только даты, игнорируя время
+    if current_date.date() == issue_datetime.date():
+        print(YELLOW + "\nДедлайн сегодня!" + RESET)
+    elif current_date > issue_datetime:
         expired_duration = current_date - issue_datetime
         print(RED + "\nСрок выполнения заметки истёк!" + RESET)
         print(RED + "Внимание! Дедлайн истёк: " + format_duration(expired_duration) + RESET)
@@ -85,6 +89,7 @@ def check_expiry(issue_date):
         remaining_duration = issue_datetime - current_date
         print(GREEN + "\nСрок выполнения заметки ещё не истёк. Отобразить оставшееся время можно введя команду time" + RESET)
         print(GREEN + "Оставшееся время до истечения срока: " + format_duration(remaining_duration) + RESET)
+
 
 def calculate_remaining_time(issue_date):
     """Вычисляет и возвращает оставшееся время до истечения срока."""
@@ -141,6 +146,7 @@ def main():
             print("Некорректный выбор. Пожалуйста, выберите один из предложенных вариантов.")
 
     # Ввод дат создания и истечения заметки
+    print("\n")
     created_date = input_valid_date("Введите дату создания заметки (дд-мм-гггг): ")
     issue_date = input_valid_date("Введите дату истечения заметки (дд-мм-гггг): ")
 
