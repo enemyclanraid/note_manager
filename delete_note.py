@@ -111,6 +111,7 @@ def calculate_remaining_time(issue_date):
 
 
 def delete_note(notes):
+    """Функция удаления заметок"""
     if not notes:
         print("\nНет доступных заметок для удаления.")
         return
@@ -134,7 +135,7 @@ def delete_note(notes):
             print("Некорректный номер заметки.")
 
     else:
-        for i in range(len(notes) - 1, -1, -1):  # Проходим в обратном порядке для безопасного удаления
+        for i in range(len(notes) - 1, -1, -1):
             if notes[i]["username"] == criteria or criteria in notes[i]["titles"]:
                 confirm = input(
                     f"Вы уверены, что хотите удалить заметку '{sorted(notes[i]['titles'])}'? (да/нет): ").strip().lower()
