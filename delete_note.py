@@ -194,31 +194,42 @@ def main():
                     print(f"\nЗаметка {i}:")
                     display_note_info(note)
 
-
         elif command == 'delete':
             if not notes:
                 print("\nНет доступных заметок для удаления.")
             else:
                 print("\nВы можете удалить заметку по имени пользователя, заголовку или номеру.")
                 criteria = input("Введите имя пользователя, заголовок или номер заметки для удаления: ").strip()
-
                 found = False
 
                 if criteria.isdigit():
                     index = int(criteria) - 1
                     if 0 <= index < len(notes):
-                        deleted_note = notes.pop(index)
-                        print(f"Заметка '{deleted_note['titles']}' успешно удалена.")
-                        found = True
+
+                        confirm = input(
+                            f"Вы уверены, что хотите удалить заметку '{notes[index]['titles']}'? (да/нет): ").strip().lower()
+                        if confirm == 'да':
+                            deleted_note = notes.pop(index)
+                            print(f"Заметка '{deleted_note['titles']}' успешно удалена.")
+                            found = True
+                        else:
+                            print("Удаление отменено.")
                     else:
                         print("Некорректный номер заметки.")
 
                 else:
                     for i in range(len(notes) - 1, -1, -1):
                         if notes[i]["username"] == criteria or criteria in notes[i]["titles"]:
-                            deleted_note = notes.pop(i)
-                            print(f"Заметка '{deleted_note['titles']}' успешно удалена.")
-                            found = True
+
+                            confirm = input(
+                                f"Вы уверены, что хотите удалить заметку '{notes[i]['titles']}'? (да/нет): ").strip().lower()
+
+                            if confirm == 'да':
+                                deleted_note = notes.pop(i)
+                                print(f"Заметка '{deleted_note['titles']}' успешно удалена.")
+                                found = True
+                            else:
+                                print("Удаление отменено.")
                 if not found:
                     print("Заметка не найдена.")
 
