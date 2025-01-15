@@ -1,7 +1,7 @@
 import locale
 from datetime import datetime
 
-# Словарь для преобразования числового представления месяца в текстовое
+
 months = {
     "01": "января",
     "02": "февраля",
@@ -17,18 +17,16 @@ months = {
     "12": "декабря",
 }
 
-# Устанавливаем локаль на русский язык
+
 locale.setlocale(locale.LC_TIME, 'ru_RU')
 
-# Получаем текущую дату и время
 now = datetime.now()
 
-# Форматируем вывод
 formatted_date = now.strftime("%d-%m-%Y")
-# ANSI escape code для зеленого цвета
+
 GREEN = "\033[92m"
-RESET = "\033[0m"  # Сброс цвета
-# Выводим результат в консоль
+RESET = "\033[0m"
+
 print(GREEN + "Текущая дата: " + formatted_date + RESET)
 
 
@@ -40,6 +38,7 @@ def display_note_info(note):
     print("Дата создания заметки:", note["created_date"])
     print("Дата истечения заметки:", note["issue_date"])
     print("Заголовки заметок:", sorted(note["titles"]))
+
 
 def format_duration(duration):
     """Форматирует длительность в годах:месяцах:неделях:днях:часах:минутах:секундах."""
@@ -55,6 +54,7 @@ def format_duration(duration):
     seconds = seconds % 60
     return f"{years} лет, {months} месяцев, {weeks} недель, {days} дней, {hours} часов, {minutes} минут, {seconds} секунд"
 
+
 def input_valid_date(prompt):
     """Запрашивает ввод даты у пользователя и проверяет ее корректность."""
     while True:
@@ -64,6 +64,7 @@ def input_valid_date(prompt):
             return date_str
         except ValueError:
             print("Некорректный формат даты или несуществующая дата. Попробуйте снова (формат: дд-мм-гггг).")
+
 
 def check_expiry(issue_date):
     """Проверяет, истек ли срок выполнения заметки."""
@@ -86,11 +87,11 @@ def check_expiry(issue_date):
         print(GREEN + "\nСрок выполнения заметки ещё не истёк." + RESET)
         print(GREEN + "Оставшееся время до истечения срока: " + format_duration(remaining_duration) + RESET)
 
+
 def calculate_remaining_time(issue_date):
     """Вычисляет и возвращает оставшееся время до истечения срока."""
     current_date = datetime.now()
 
-    # Преобразуем строку "дд месяц" обратно в объект datetime
     try:
         day, month_name = issue_date.split()
         month_number = list(months.values()).index(month_name) + 1  # Получаем номер месяца
@@ -98,11 +99,11 @@ def calculate_remaining_time(issue_date):
     except ValueError as e:
         return f"Ошибка: Некорректный формат даты. {e}"
 
-    # ANSI escape codes для цветов
-    RED = "\033[31m"  # Красный цвет
-    GREEN = "\033[92m"  # Зеленый цвет
-    YELLOW = "\033[33m"  # Желтый цвет
-    RESET = "\033[0m"  # Сброс цвета
+
+    RED = "\033[31m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[33m"
+    RESET = "\033[0m"
 
     if current_date.date() == issue_datetime.date():
         return YELLOW + "Дедлайн сегодня!" + RESET
@@ -165,13 +166,15 @@ def create_note():
         "titles": list(titles)
     }
 
+
 def main():
     notes = []
     start_time = datetime.now()
     print("\nДобро пожаловать в систему заметок. Вход в ждущий режим выполнения команд.")
 
     while True:
-        command = input("\nВведите команду create, для создания новой заметки (или 'help' для справки): ").strip().lower()
+        command = input(
+            "\nВведите команду create, для создания новой заметки (или 'help' для справки): ").strip().lower()
 
         if command == 'create':
             print("\nСоздание новой заметки...")
@@ -188,7 +191,6 @@ def main():
 
                 if add_more == 'нет':
                     break
-
             print("Создание заметок завершено.")
 
 
@@ -208,17 +210,12 @@ def main():
                     print(f"\nЗаметка {i}:")
                     print(calculate_remaining_time(note["issue_date"]))
 
-
-
         elif command == 'retry':
-
-            if not notes:  # Проверяем, есть ли заметки
-
+            if not notes:
                 print("Нет заметок для редактирования.")
-
                 continue
 
-            # Отображаем список заметок для выбора
+
 
             print("\nСписок доступных заметок:")
 
@@ -226,46 +223,29 @@ def main():
                 print(f"{idx}. {note['username']} - {note['titles']}")
 
             while True:
-
                 try:
-
                     note_index = int(input("Введите номер заметки, которую хотите отредактировать: ")) - 1
-
                     if 0 <= note_index < len(notes):
-
                         selected_note = notes[note_index]
-
                         break
-
                     else:
-
                         print("Некорректный номер. Попробуйте снова.")
 
                 except ValueError:
-
                     print("Введите число.")
 
-            # Редактирование выбранной заметки
-
             print("\nРедактирование выбранной заметки:")
-
-            # Редактирование имени пользователя
 
             new_username = input(f"Введите новое имя пользователя (текущая: {selected_note['username']}): ").strip()
 
             if new_username:
                 selected_note['username'] = new_username
 
-            # Редактирование заголовков
-
             print("\nРедактирование заголовков заметки.")
-
             new_titles = set(selected_note['titles'])
 
             while True:
-
                 title_action = input("Введите новый заголовок (или оставьте пустым для завершения): ").strip()
-
                 if not title_action:
                     break
 
@@ -273,37 +253,23 @@ def main():
 
             selected_note['titles'] = list(new_titles)
 
-            # Редактирование содержания
-
             new_content = input(f"Введите новое содержание заметки (текущее: {selected_note['content']}): ").strip()
 
             if new_content:
                 selected_note['content'] = new_content
 
-            # Редактирование даты создания
-
             new_created_date = input_valid_date(
-
-                f"Введите новую дату создания заметки (текущая: {selected_note['created_date']}): "
-
-            )
+                f"Введите новую дату создания заметки (текущая: {selected_note['created_date']}): ")
 
             if new_created_date:
                 day_created, month_created = new_created_date[:2], new_created_date[3:5]
-
                 selected_note['created_date'] = f"{day_created} {months[month_created]}"
 
-            # Редактирование даты истечения
-
             new_issue_date = input_valid_date(
-
-                f"Введите новую дату истечения заметки (текущая: {selected_note['issue_date']}): "
-
-            )
+                f"Введите новую дату истечения заметки (текущая: {selected_note['issue_date']}): ")
 
             if new_issue_date:
                 day_issue, month_issue = new_issue_date[:2], new_issue_date[3:5]
-
                 selected_note['issue_date'] = f"{day_issue} {months[month_issue]}"
 
             print("Заметка успешно обновлена!")
@@ -369,6 +335,7 @@ def main():
 
         else:
             print("Неизвестная команда. Введите 'help' для получения списка доступных команд.")
+
 
 if __name__ == "__main__":
     main()

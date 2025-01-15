@@ -1,7 +1,6 @@
 import locale
 from datetime import datetime
 
-# Словарь для преобразования числового представления месяца в текстовое
 months = {
     "01": "января",
     "02": "февраля",
@@ -18,18 +17,14 @@ months = {
 }
 
 
-# Устанавливаем локаль на русский язык
+
 locale.setlocale(locale.LC_TIME, 'ru_RU')
-
-# Получаем текущую дату и время
 now = datetime.now()
-
-# Форматируем вывод
 formatted_date = now.strftime("%d-%m-%Y")
-# ANSI escape code для зеленого цвета
+
 GREEN = "\033[92m"
-RESET = "\033[0m"  # Сброс цвета
-# Выводим результат в консоль
+RESET = "\033[0m"
+
 print(GREEN + "Текущая дата: " + formatted_date + RESET)
 
 
@@ -72,13 +67,13 @@ def check_expiry(issue_date):
     current_date = datetime.now()
     issue_datetime = datetime.strptime(issue_date, "%d-%m-%Y")
 
-    # ANSI escape codes для цветов
-    RED = "\033[31m"  # Красный цвет
-    GREEN = "\033[92m"  # Зеленый цвет
-    YELLOW = "\033[93m"  # Желтый цвет
-    RESET = "\033[0m"  # Сброс цвета
 
-    # Сравниваем только даты, игнорируя время
+    RED = "\033[31m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RESET = "\033[0m"
+
+
     if current_date.date() == issue_datetime.date():
         print(YELLOW + "\nДедлайн сегодня!" + RESET)
     elif current_date > issue_datetime:
@@ -96,10 +91,10 @@ def calculate_remaining_time(issue_date):
     current_date = datetime.now()
     issue_datetime = datetime.strptime(issue_date, "%d-%m-%Y")
 
-    # ANSI escape codes для цветов
-    RED = "\033[31m"  # Красный цвет
-    GREEN = "\033[92m"  # Зеленый цвет
-    RESET = "\033[0m"  # Сброс цвета
+
+    RED = "\033[31m"
+    GREEN = "\033[92m"
+    RESET = "\033[0m"
 
     if current_date > issue_datetime:
         expired_duration = current_date - issue_datetime
@@ -109,11 +104,11 @@ def calculate_remaining_time(issue_date):
         return GREEN + f"Оставшееся время до истечения срока: {format_duration(remaining_duration)}." + RESET
 
 def main():
-    # Запрос имени пользователя
-    username = input("Введите имя пользователя: ")
-    titles = set()  # Используем множество для хранения уникальных заголовков
 
-    # Цикл для ввода заголовков заметок
+    username = input("Введите имя пользователя: ")
+    titles = set()
+
+
     while True:
         title = input("Введите заголовок (или оставьте пустым для завершения): ")
 
@@ -123,15 +118,15 @@ def main():
         if title in titles:
             print("Этот заголовок уже существует. Пожалуйста, введите другой.")
         else:
-            titles.add(title)  # Добавляем заголовок в множество
+            titles.add(title)
 
-    # Ввод основной информации о заметке
+
     content = input("Введите описание заметки: ")
     print("\nВыберите статус заметки:")
     status_dict = {
-        "1": "\033[92mвыполнено\033[0m",  # Зеленый цвет для статуса "выполнено"
-        "2": "\033[93mв процессе\033[0m",  # Желтый цвет для статуса "в процессе"
-        "3": "\033[31mотложено\033[0m"  # Оранжевый цвет для статуса "отложено"
+        "1": "\033[92mвыполнено\033[0m",
+        "2": "\033[93mв процессе\033[0m",
+        "3": "\033[31mотложено\033[0m"
     }
 
     for key, value in status_dict.items():
@@ -145,37 +140,37 @@ def main():
         else:
             print("Некорректный выбор. Пожалуйста, выберите один из предложенных вариантов.")
 
-    # Ввод дат создания и истечения заметки
+
     print("\n")
     created_date = input_valid_date("Введите дату создания заметки (дд-мм-гггг): ")
     issue_date = input_valid_date("Введите дату истечения заметки (дд-мм-гггг): ")
 
-    # Разбор введенных дат
+
     day_created, month_created = created_date[:2], created_date[3:5]
     day_issue, month_issue = issue_date[:2], issue_date[3:5]
 
-    # Форматирование дат с использованием словаря months
+
     temp_created_date = f"{day_created} {months[month_created]}"
     temp_issue_date = f"{day_issue} {months[month_issue]}"
 
-    # Создание списка с информацией о заметке
+
     note = [
         username,
         content,
         status,
         temp_created_date,
         temp_issue_date,
-        list(titles)  # Преобразуем множество обратно в список для вывода
+        list(titles)
     ]
 
-    # Установка таймера
+
     start_time = datetime.now()
     print("\nЗаметка успешно создана. Вход в ждущий режим выполнения команд.")
 
-    # Проверка срока выполнения заметки
+
     check_expiry(issue_date)
 
-    # Вход в ждущий режим выполнения команд
+
     while True:
         command = input("\nВведите команду (или 'help' для справки): ").strip().lower()
 
@@ -186,21 +181,21 @@ def main():
 
         elif command == 'retry':
             print("Редактирование заметки...")
-            # Получаем новое имя пользователя и содержание заметки
+
             username = input("Введите новое имя пользователя (текущая: {}): ".format(note[0])) or note[0]
             content = input("Введите новое содержание заметки (текущее: {}): ".format(note[1])) or note[1]
 
-            # Ввод новых дат с проверкой корректности
+
             created_date = input_valid_date(
                 "Введите новую дату создания заметки (дд-мм-гггг, текущее: {}): ".format(note[3])) or note[3]
             issue_date = input_valid_date(
                 "Введите новую дату истечения заметки (дд-мм-гггг, текущее: {}): ".format(note[4])) or note[4]
 
-            # Форматирование дат с использованием словаря months
+
             note[3] = f"{created_date[:2]} {months[created_date[3:5]]}"
             note[4] = f"{issue_date[:2]} {months[issue_date[3:5]]}"
 
-            # Обновление заголовков
+
             new_titles = set()
             while True:
 
@@ -212,7 +207,7 @@ def main():
 
             note[5] = list(new_titles)
 
-            # Обновление заметки
+
             note[0] = username
             note[1] = content
             print("Заметка успешно обновлена.")

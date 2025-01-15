@@ -1,4 +1,4 @@
-# Словарь для преобразования числового представления месяца в текстовое
+
 months = {
     "01": "января",
     "02": "февраля",
@@ -24,11 +24,10 @@ def display_note_info(note):
     print("Заголовки заметок:", sorted(note[5]))
 
 def main():
-    # Запрос имени пользователя
-    username = input("Введите имя пользователя: ")
-    titles = set()  # Используем множество для хранения уникальных заголовков
 
-    # Цикл для ввода заголовков заметок
+    username = input("Введите имя пользователя: ")
+    titles = set()
+
     while True:
         title = input("Введите заголовок (или оставьте пустым для завершения): ")
 
@@ -38,35 +37,35 @@ def main():
         if title in titles:
             print("Этот заголовок уже существует. Пожалуйста, введите другой.")
         else:
-            titles.add(title)  # Добавляем заголовок в множество
+            titles.add(title)
 
-    # Ввод основной информации о заметке
+
     content = input("Введите описание заметки: ")
     status = input("Введите статус заметки: ")
 
-    # Ввод дат создания и истечения заметки
+
     created_date = input("Введите дату создания заметки (дд-мм-гггг): ")
     issue_date = input("Введите дату истечения заметки (дд-мм-гггг): ")
 
-    # Разбор введенных дат
+
     day_created, month_created = created_date[:2], created_date[3:5]
     day_issue, month_issue = issue_date[:2], issue_date[3:5]
 
-    # Форматирование дат с использованием словаря months
+
     temp_created_date = f"{day_created} {months[month_created]}"
     temp_issue_date = f"{day_issue} {months[month_issue]}"
 
-    # Создание списка с информацией о заметке
+
     note = [
         username,
         content,
         status,
         temp_created_date,
         temp_issue_date,
-        list(titles)  # Преобразуем множество обратно в список для вывода
+        list(titles)
     ]
 
-    # Вход в ждущий режим выполнения команд
+
     while True:
         command = input("\nВведите команду (или 'help' для справки): ").strip().lower()
 
@@ -81,28 +80,28 @@ def main():
             content = input("Введите новое содержание заметки (текущее: {}): ".format(note[1])) or note[1]
             status = input("Введите новый статус заметки (текущий: {}): ".format(note[2])) or note[2]
 
-            # Ввод новых дат
+
             created_date = input("Введите новую дату создания заметки (дд-мм-гггг, текущее: {}): ".format(note[3])) or \
                            note[3]
             issue_date = input("Введите новую дату истечения заметки (дд-мм-гггг, текущее: {}): ".format(note[4])) or \
                          note[4]
 
-            # Разбор введенных дат
+
             day_created, month_created = created_date[:2], created_date[3:5]
             day_issue, month_issue = issue_date[:2], issue_date[3:5]
 
-            # Форматирование дат с использованием словаря months
+
             temp_created_date = f"{day_created} {months[month_created]}"
             temp_issue_date = f"{day_issue} {months[month_issue]}"
 
-            # Обновление заметки
+
             note[0] = username
             note[1] = content
             note[2] = status
             note[3] = temp_created_date
             note[4] = temp_issue_date
 
-            # Заголовки могут быть изменены или оставлены без изменений
+
             new_titles = set()
 
             while True:
@@ -111,7 +110,7 @@ def main():
                     break
                 new_titles.add(title)
 
-            note[5] = list(new_titles)  # Обновляем заголовки
+            note[5] = list(new_titles)
 
             print("Заметка успешно обновлена.")
 

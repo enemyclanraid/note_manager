@@ -1,7 +1,7 @@
 import locale
 from datetime import datetime
 
-# Словарь для преобразования числового представления месяца в текстовое
+
 months = {
     "01": "января",
     "02": "февраля",
@@ -17,16 +17,16 @@ months = {
     "12": "декабря",
 }
 
-# Устанавливаем локаль на русский язык. Для отображения даты на русском языке.
+
 locale.setlocale(locale.LC_TIME, 'ru_RU')
-# Получаем текущую дату и время
+
 now = datetime.now()
-# Форматируем вывод
+
 formatted_date = now.strftime("%d-%m-%Y")
-# ANSI escape code для зеленого цвета
+
 GREEN = "\033[92m"
 RESET = "\033[0m"
-# Выводим результат в консоль
+
 print(GREEN + "Текущая дата: " + formatted_date + RESET)
 
 
