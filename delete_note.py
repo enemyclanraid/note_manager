@@ -117,15 +117,14 @@ def delete_note(notes):
         return
 
     print("\nВы можете удалить заметку по имени пользователя, заголовку или номеру.")
-    criteria = input("Введите имя пользователя, заголовок или номер заметки для удаления: ").strip()
+    criteria = input("Введите имя пользователя, заголовок или номер заметки для удаления: ").strip().lower()
     found = False
 
     if criteria.isdigit():
         index = int(criteria) - 1
         if 0 <= index < len(notes):
-            confirm = input(
-                f"Вы уверены, что хотите удалить заметку '{sorted(notes[index]['titles'])}'? (да/нет): ").strip().lower()
-            if confirm == 'да':
+            confirm = input(f"Вы уверены, что хотите удалить заметку '{sorted(notes[index]['titles'])}'? (yes/no): ").strip().lower()
+            if confirm == 'yes':
                 deleted_note = notes.pop(index)
                 print(f"Заметка '{deleted_note['titles']}' успешно удалена.")
                 found = True
@@ -136,17 +135,19 @@ def delete_note(notes):
 
     else:
         for i in range(len(notes) - 1, -1, -1):
-            if notes[i]["username"] == criteria or criteria in notes[i]["titles"]:
+            if notes[i]["username"].lower() == criteria or criteria in (title.lower() for title in notes[i]["titles"]):
                 confirm = input(
-                    f"Вы уверены, что хотите удалить заметку '{sorted(notes[i]['titles'])}'? (да/нет): ").strip().lower()
-                if confirm == 'да':
+                    f"Вы уверены, что хотите удалить заметку '{sorted(notes[i]['titles'])}'? (yes/no): ").strip().lower()
+                if confirm == 'yes':
                     deleted_note = notes.pop(i)
                     print(f"Заметка '{deleted_note['titles']}' успешно удалена.")
                     found = True
                 else:
                     print("Удаление отменено.")
+
     if not found:
         print("Заметка не найдена.")
+
 
 def create_note():
     username = input("Введите имя пользователя: ")
@@ -216,12 +217,12 @@ def main():
                 print("Заметка успешно создана.")
 
                 while True:
-                    add_more = input("Хотите добавить ещё одну заметку? (да/нет): ").lower()
-                    if add_more in ['да', 'нет']:
+                    add_more = input("Хотите добавить ещё одну заметку? (yes/no): ").lower()
+                    if add_more in ['yes', 'no']:
                         break
-                    print("Пожалуйста, введите 'да' или 'нет'.")
+                    print("Пожалуйста, введите 'yes' или 'no'.")
 
-                if add_more == 'нет':
+                if add_more == 'no':
                     break
 
             print("Создание заметок завершено.")
