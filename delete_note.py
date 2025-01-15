@@ -19,15 +19,13 @@ months = {
 
 # Устанавливаем локаль на русский язык. Для отображения даты на русском языке.
 locale.setlocale(locale.LC_TIME, 'ru_RU')
-
 # Получаем текущую дату и время
 now = datetime.now()
-
 # Форматируем вывод
 formatted_date = now.strftime("%d-%m-%Y")
 # ANSI escape code для зеленого цвета
 GREEN = "\033[92m"
-RESET = "\033[0m"  # Сброс цвета
+RESET = "\033[0m"
 # Выводим результат в консоль
 print(GREEN + "Текущая дата: " + formatted_date + RESET)
 
@@ -98,10 +96,10 @@ def calculate_remaining_time(issue_date):
     except ValueError as e:
         return f"Ошибка: Некорректный формат даты. {e}"
 
-    RED = "\033[31m"  # Красный цвет
-    GREEN = "\033[92m"  # Зеленый цвет
-    YELLOW = "\033[33m"  # Желтый цвет
-    RESET = "\033[0m"  # Сброс цвета
+    RED = "\033[31m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[33m"
+    RESET = "\033[0m"
 
     if current_date.date() == issue_datetime.date():
         return YELLOW + "Дедлайн сегодня!" + RESET
