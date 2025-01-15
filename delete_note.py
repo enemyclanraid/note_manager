@@ -110,6 +110,43 @@ def calculate_remaining_time(issue_date):
         return GREEN + f"Оставшееся время до истечения срока: {format_duration(remaining_duration)}." + RESET
 
 
+def delete_note(notes):
+    if not notes:
+        print("\nНет доступных заметок для удаления.")
+        return
+
+    print("\nВы можете удалить заметку по имени пользователя, заголовку или номеру.")
+    criteria = input("Введите имя пользователя, заголовок или номер заметки для удаления: ").strip()
+    found = False
+
+    if criteria.isdigit():
+        index = int(criteria) - 1
+        if 0 <= index < len(notes):
+            confirm = input(
+                f"Вы уверены, что хотите удалить заметку '{sorted(notes[index]['titles'])}'? (да/нет): ").strip().lower()
+            if confirm == 'да':
+                deleted_note = notes.pop(index)
+                print(f"Заметка '{deleted_note['titles']}' успешно удалена.")
+                found = True
+            else:
+                print("Удаление отменено.")
+        else:
+            print("Некорректный номер заметки.")
+
+    else:
+        for i in range(len(notes) - 1, -1, -1):  # Проходим в обратном порядке для безопасного удаления
+            if notes[i]["username"] == criteria or criteria in notes[i]["titles"]:
+                confirm = input(
+                    f"Вы уверены, что хотите удалить заметку '{sorted(notes[i]['titles'])}'? (да/нет): ").strip().lower()
+                if confirm == 'да':
+                    deleted_note = notes.pop(i)
+                    print(f"Заметка '{deleted_note['titles']}' успешно удалена.")
+                    found = True
+                else:
+                    print("Удаление отменено.")
+    if not found:
+        print("Заметка не найдена.")
+
 def create_note():
     username = input("Введите имя пользователя: ")
     titles = set()
@@ -141,6 +178,8 @@ def create_note():
             break
         else:
             print("Некорректный выбор. Пожалуйста, выберите один из предложенных вариантов.")
+
+
 
     created_date = input_valid_date("Введите дату создания заметки (дд-мм-гггг): ")
     issue_date = input_valid_date("Введите дату истечения заметки (дд-мм-гггг): ")
@@ -195,43 +234,7 @@ def main():
                     display_note_info(note)
 
         elif command == 'delete':
-            if not notes:
-                print("\nНет доступных заметок для удаления.")
-            else:
-                print("\nВы можете удалить заметку по имени пользователя, заголовку или номеру.")
-                criteria = input("Введите имя пользователя, заголовок или номер заметки для удаления: ").strip()
-                found = False
-
-                if criteria.isdigit():
-                    index = int(criteria) - 1
-                    if 0 <= index < len(notes):
-
-                        confirm = input(
-                            f"Вы уверены, что хотите удалить заметку '{notes[index]['titles']}'? (да/нет): ").strip().lower()
-                        if confirm == 'да':
-                            deleted_note = notes.pop(index)
-                            print(f"Заметка '{deleted_note['titles']}' успешно удалена.")
-                            found = True
-                        else:
-                            print("Удаление отменено.")
-                    else:
-                        print("Некорректный номер заметки.")
-
-                else:
-                    for i in range(len(notes) - 1, -1, -1):
-                        if notes[i]["username"] == criteria or criteria in notes[i]["titles"]:
-
-                            confirm = input(
-                                f"Вы уверены, что хотите удалить заметку '{notes[i]['titles']}'? (да/нет): ").strip().lower()
-
-                            if confirm == 'да':
-                                deleted_note = notes.pop(i)
-                                print(f"Заметка '{deleted_note['titles']}' успешно удалена.")
-                                found = True
-                            else:
-                                print("Удаление отменено.")
-                if not found:
-                    print("Заметка не найдена.")
+            delete_note(notes)
 
         elif command == 'time':
             if not notes:
