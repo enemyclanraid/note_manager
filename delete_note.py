@@ -88,7 +88,6 @@ def calculate_remaining_time(issue_date):
     """Вычисляет и возвращает оставшееся время до истечения срока."""
     current_date = datetime.now()
 
-    # Преобразуем строку "дд месяц" обратно в объект datetime
     try:
         day, month_name = issue_date.split()
         month_number = list(months.values()).index(month_name) + 1  # Получаем номер месяца
