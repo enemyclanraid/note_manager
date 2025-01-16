@@ -320,26 +320,24 @@ def update_note(notes):
 
 def list_notes(notes):
     """Отображает список заметок с возможностью сортировки и постраничного вывода."""
-
     if not notes:
         print("\nНет доступных заметок.")
         return
 
-    # Сортировка заметок по выбору пользователя
     sort_choice = input(
         "Хотите отсортировать заметки? (d) по дате создания, (e) по дедлайну, (s) по статусу, (n) без сортировки: ").strip().lower()
 
     if sort_choice == 'd':
-        notes.sort(key=lambda note: note['created_date'])  # Сортировка по дате создания
+        notes.sort(key=lambda note: note['created_date'])
     elif sort_choice == 'e':
-        notes.sort(key=lambda note: note['issue_date'])  # Сортировка по дедлайну
+        notes.sort(key=lambda note: note['issue_date'])
     elif sort_choice == 's':
-        notes.sort(key=lambda note: note['status'])  # Сортировка по статусу
+        notes.sort(key=lambda note: note['status'])
 
-    # Параметры постраничного вывода
+
     items_per_page = 5
     total_notes = len(notes)
-    total_pages = (total_notes + items_per_page - 1) // items_per_page  # Количество страниц
+    total_pages = (total_notes + items_per_page - 1) // items_per_page
 
     current_page = 1
 
@@ -353,7 +351,6 @@ def list_notes(notes):
 
         for i in range(start_index, end_index):
             note = notes[i]
-            # Объединяем заголовки в строку
             titles_str = ", ".join(note['titles']) if isinstance(note['titles'], list) else note['titles']
             content_str = note['content'] if 'content' in note else ''  # Проверка на наличие содержания
             print(
@@ -361,7 +358,6 @@ def list_notes(notes):
 
         print("-" * 130)
 
-        # Проверка на наличие следующей страницы или возврат на предыдущую
         next_action = input(
             "Нажмите 'n' для следующей страницы, 'b' для предыдущей страницы или 'q' для выхода: ").strip().lower()
 
@@ -370,20 +366,15 @@ def list_notes(notes):
                 current_page += 1
             else:
                 print("Вы уже на последней странице.")
-
         elif next_action == 'b':
             if current_page > 1:
                 current_page -= 1
             else:
                 print("Вы уже на первой странице.")
-
         elif next_action == 'q':
             break
-
         else:
             print("Некорректный ввод. Пожалуйста, используйте 'n', 'b' или 'q'.")
-
-
 
 
 def main():
