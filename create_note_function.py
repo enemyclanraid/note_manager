@@ -53,17 +53,25 @@ def format_duration(duration):
     seconds = seconds % 60
     return f"{years} лет, {months} месяцев, {weeks} недель, {days} дней, {hours} часов, {minutes} минут, {seconds} секунд"
 
+
 def input_valid_date(prompt):
     """Запрашивает ввод даты у пользователя и проверяет ее корректность."""
     while True:
-        date_str = input(prompt).strip()  # Удаляем пробелы по краям
+        date_str = input(prompt).strip()
         if date_str == "":
             return datetime.now().strftime("%d-%m-%Y")
         try:
-            date_obj = datetime.strptime(date_str, "%d-%m-%Y")
+            if '-' in date_str:
+                date_obj = datetime.strptime(date_str, "%d-%m-%Y")
+            elif '/' in date_str:
+                date_obj = datetime.strptime(date_str, "%d/%m/%Y")
+            else:
+                raise ValueError("Некорректный формат даты.")
+
             return date_str
-        except ValueError:
-            print("Некорректный формат даты или несуществующая дата. Попробуйте снова (формат: дд-мм-гггг).")
+        except ValueError as e:
+            print(
+                "Некорректный формат даты или несуществующая дата. Попробуйте снова (формат: дд-мм-гггг или дд/мм/гггг).")
 
 
 def calculate_remaining_time(issue_date):
@@ -71,8 +79,12 @@ def calculate_remaining_time(issue_date):
     current_date = datetime.now()
 
     try:
-        # Преобразуем строку "дд-мм-гггг" в объект datetime
-        issue_datetime = datetime.strptime(issue_date, "%d-%m-%Y")
+        if '-' in issue_date:
+            issue_datetime = datetime.strptime(issue_date, "%d-%m-%Y")
+        elif '/' in issue_date:
+            issue_datetime = datetime.strptime(issue_date, "%d/%m/%Y")
+        else:
+            raise ValueError("Некорректный формат даты.")
     except ValueError as e:
         return f"Ошибка: Некорректный формат даты. {e}"
 
@@ -163,15 +175,10 @@ def create_note():
         else:
             print("Некорректный выбор. Пожалуйста, выберите один из предложенных вариантов.")
 
-
     created_date = input_valid_date(
-        "Введите дату создания заметки (дд-мм-гггг) или оставьте поле пустым, если нужно вставить текущую дату: ")
+        "Введите дату создания заметки (дд-мм-гггг или дд/мм/гггг) или оставьте поле пустым, если нужно вставить текущую дату: ")
 
-
-    if created_date == "":
-        created_date = datetime.now().strftime("%d-%m-%Y")
-
-    issue_date = input_valid_date("Введите дату истечения заметки (дд-мм-гггг): ")
+    issue_date = input_valid_date("Введите дату истечения заметки (дд-мм-гггг или дд/мм/гггг): ")
 
     return {
         "username": username,
