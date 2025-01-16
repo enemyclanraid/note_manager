@@ -317,6 +317,75 @@ def update_note(notes):
         else:
             print(f"Обновление поля '{field_name}' отменено.")
 
+
+def list_notes(notes):
+    """Отображает список заметок с возможностью сортировки и постраничного вывода."""
+
+    if not notes:
+        print("\nНет доступных заметок.")
+        return
+
+    # Сортировка заметок по выбору пользователя
+    sort_choice = input(
+        "Хотите отсортировать заметки? (d) по дате создания, (e) по дедлайну, (s) по статусу, (n) без сортировки: ").strip().lower()
+
+    if sort_choice == 'd':
+        notes.sort(key=lambda note: note['created_date'])  # Сортировка по дате создания
+    elif sort_choice == 'e':
+        notes.sort(key=lambda note: note['issue_date'])  # Сортировка по дедлайну
+    elif sort_choice == 's':
+        notes.sort(key=lambda note: note['status'])  # Сортировка по статусу
+
+    # Параметры постраничного вывода
+    items_per_page = 5
+    total_notes = len(notes)
+    total_pages = (total_notes + items_per_page - 1) // items_per_page  # Количество страниц
+
+    current_page = 1
+
+    while True:
+        print(f"\nСтраница {current_page}/{total_pages}")
+        start_index = (current_page - 1) * items_per_page
+        end_index = min(start_index + items_per_page, total_notes)
+
+        print(f"{'№':<3} {'Имя пользователя':<15} {'Заголовок':<26} {'Содержание':<38} {'Дата создания':<15} {'Дедлайн':<15} {'Статус':<15}")
+        print("-" * 130)
+
+        for i in range(start_index, end_index):
+            note = notes[i]
+            # Объединяем заголовки в строку
+            titles_str = ", ".join(note['titles']) if isinstance(note['titles'], list) else note['titles']
+            content_str = note['content'] if 'content' in note else ''  # Проверка на наличие содержания
+            print(
+                f"{i + 1:<3} {note['username']:<15} {titles_str:<26} {content_str:<38} {note['created_date']:<15} {note['issue_date']:<15} {note['status']:<15}")
+
+        print("-" * 130)
+
+        # Проверка на наличие следующей страницы или возврат на предыдущую
+        next_action = input(
+            "Нажмите 'n' для следующей страницы, 'b' для предыдущей страницы или 'q' для выхода: ").strip().lower()
+
+        if next_action == 'n':
+            if current_page < total_pages:
+                current_page += 1
+            else:
+                print("Вы уже на последней странице.")
+
+        elif next_action == 'b':
+            if current_page > 1:
+                current_page -= 1
+            else:
+                print("Вы уже на первой странице.")
+
+        elif next_action == 'q':
+            break
+
+        else:
+            print("Некорректный ввод. Пожалуйста, используйте 'n', 'b' или 'q'.")
+
+
+
+
 def main():
     notes = []
     start_time = datetime.now()
@@ -383,12 +452,15 @@ def main():
                     else:
                         print("Некорректный номер. Попробуйте снова.")
 
+        elif command == 'table':
+            list_notes(notes)
+
         elif command == 'list':
             if not notes:
                 print("\nНет доступных заметок.")
             else:
                 for i, note in enumerate(notes, 1):
-                    print(f"\nЗаметка {i}:")
+                    print(f"\nЗаметка №{i}:")
                     display_note_info(note)
                     print(calculate_remaining_time(note["issue_date"]))
                     print("\n------------------------------")
@@ -504,11 +576,13 @@ def main():
 
 Основные:
   create : создать новую заметку.
-  list   : отобразить информацию обо всех заметках.
+  list   : отобразить информацию обо всех заметках списком.
+  table  : отобразить информацию обо всех заметках в виде таблицы.
   delete : удалить существующую заметку.
   retry  : инициировать редактирование существующих заметок.
   status : изменить статус существующих заметок.
   update : обновить существующие заметки.
+  
 
 Работа со временем:
   time   : отобразить оставшееся время до истечения срока заметки.
