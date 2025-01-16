@@ -192,7 +192,6 @@ def create_note():
 
 def update_note(notes):
     """Обновляет существующую заметку по номеру."""
-
     if not notes:
         print("\nНет доступных заметок для редактирования.")
         return
@@ -204,17 +203,14 @@ def update_note(notes):
     while True:
         try:
             note_index = int(input("Введите номер заметки для редактирования: ")) - 1
-
             if 0 <= note_index < len(notes):
                 selected_note = notes[note_index]
                 break
             else:
                 print("Некорректный номер. Попробуйте снова.")
-
         except ValueError:
             print("Введите число.")
 
-    # Обновление полей заметки с подтверждением действий.
     fields_to_update = {
         'username': 'Имя пользователя',
         'titles': 'Заголовок',
@@ -243,18 +239,17 @@ def update_note(notes):
             print("Введите число.")
 
     if field_key == 'titles':
-        # Обработка изменения заголовка
         print("\nВыберите действие с заголовками:")
         action_choice = input("Вы хотите (a)добавить заголовок к существующим или (r)перезаписать все заголовки? (a/r): ").strip().lower()
 
         if action_choice == 'a':
-            new_titles = set(selected_note['titles'])  # Существующие заголовки
+            new_titles = set(selected_note['titles'])
             print("\nРедактирование заголовков заметки.")
             while True:
                 title_action = input("Введите новый заголовок (или оставьте пустым для завершения): ").strip()
                 if title_action == "":
                     break
-                # Проверка на дублирование заголовков
+
                 if title_action in new_titles:
                     print("Этот заголовок уже существует. Пожалуйста, введите другой.")
                 else:
@@ -276,7 +271,6 @@ def update_note(notes):
             print(f"Заголовки успешно обновлены на: {selected_note['titles']}")
 
     elif field_key == 'status':
-        # Обработка изменения статуса
         status_dict = {
             "1": "\033[92mвыполнено\033[0m",
             "2": "\033[93mв процессе\033[0m",
@@ -297,7 +291,6 @@ def update_note(notes):
                 print("Некорректный выбор. Попробуйте снова.")
 
     elif field_key in ['created_date', 'issue_date']:
-        # Обработка изменения даты
         new_value = input_valid_date(
             f"Введите новую дату для {field_name} (текущая: {selected_note[field_key]}), или оставьте пустым для отмены: ")
 
