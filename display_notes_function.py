@@ -352,7 +352,7 @@ def list_notes(notes):
         for i in range(start_index, end_index):
             note = notes[i]
             titles_str = ", ".join(note['titles']) if isinstance(note['titles'], list) else note['titles']
-            content_str = note['content'] if 'content' in note else ''  # Проверка на наличие содержания
+            content_str = note['content'] if 'content' in note else ''
             print(
                 f"{i + 1:<3} {note['username']:<15} {titles_str:<26} {content_str:<38} {note['created_date']:<15} {note['issue_date']:<15} {note['status']:<15}")
 
