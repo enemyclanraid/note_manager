@@ -399,6 +399,21 @@ def search_notes(notes, keyword=None, status=None):
 
     return found_notes
 
+def append_notes_to_file(notes, filename):
+    """Сохраняет список заметок в текстовый файл."""
+    with open(filename, 'a', encoding='utf-8') as file:
+        for note in notes:
+            file.write(f"Имя пользователя: {note['username']}\n")
+            file.write(f"Заголовок: {', '.join(note['titles'])}\n")
+            file.write(f"Описание: {note['content']}\n")
+            status = note['status'].replace('\033[92m', '').replace('\033[93m', '').replace('\033[31m', '').replace(
+                '\033[0m', '')
+            file.write(f"Статус: {status}\n")
+            file.write(f"Дата создания: {note['created_date']}\n")
+            file.write(f"Дедлайн: {note['issue_date']}\n")
+            file.write("----------------------------\n\n")
+
+    print(f"Заметки успешно сохранены в файл {filename}")
 
 def save_notes_to_file(notes, filename):
     """Сохраняет список заметок в текстовый файл."""
@@ -507,7 +522,8 @@ def main():
         "11": "exit - Выйти из программы.",
         "12": "save - Сохранить заметки в файл.",
         "13": "import - Импортировать заметки.",
-        "14": "cleard - Удалить дубликаты заметок."
+        "14": "cleard - Удалить дубликаты заметок.",
+        "15": "append - Добавить заметки в уже существующий файл."
 
     }
 
@@ -703,6 +719,10 @@ def main():
         elif command_input == 'save':
             filename = input("Введите имя файла для сохранения заметок: ")
             save_notes_to_file(notes, filename)
+
+        elif command_input == 'append':
+            filename = input("Введите имя файла для сохранения заметок: ")
+            append_notes_to_file(notes, filename)
 
         elif command_input == 'import':
             filename = input("Введите имя файла для загрузки заметок: ")
