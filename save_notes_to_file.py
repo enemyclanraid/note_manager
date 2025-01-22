@@ -1,6 +1,7 @@
 import locale
 from datetime import datetime
 from colorama import Fore, Style, init
+import json
 
 months = {
     "01": "января",
@@ -415,6 +416,27 @@ def append_notes_to_file(notes, filename):
 
     print(f"Заметки успешно сохранены в файл {filename}")
 
+
+def save_notes_json(notes, filename):
+    """Сохраняет список заметок в JSON файл."""
+    json_notes = []
+    for note in notes:
+        json_note = {
+            "username": note["username"],
+            "title": ", ".join(note["titles"]),
+            "content": note["content"],
+            "status": note["status"].replace('\033[92m', '').replace('\033[93m', '').replace('\033[31m', '').replace(
+                '\033[0m', ''),
+            "created_date": note["created_date"],
+            "issue_date": note["issue_date"]
+        }
+        json_notes.append(json_note)
+
+    with open(filename, 'w', encoding='utf-8') as file:
+        json.dump(json_notes, file, ensure_ascii=False, indent=4)
+
+    print(f"Заметки успешно сохранены в файл {filename} в формате JSON")
+
 def save_notes_to_file(notes, filename):
     """Сохраняет список заметок в текстовый файл."""
     with open(filename, 'w', encoding='utf-8') as file:
@@ -477,7 +499,6 @@ def clear_duplicates(notes):
     duplicates_removed = 0
 
     for note in notes:
-        # Создаем уникальный ключ для каждой заметки
         note_key = (note['username'], tuple(sorted(note['titles'])), note['content'])
 
         if note_key not in seen:
@@ -486,7 +507,7 @@ def clear_duplicates(notes):
         else:
             duplicates_removed += 1
 
-    notes[:] = unique_notes  # Обновляем оригинальный список
+    notes[:] = unique_notes
 
     print(f"Удалено {duplicates_removed} повторяющихся заметок.")
     return notes
@@ -523,7 +544,8 @@ def main():
         "12": "save - Сохранить заметки в файл.",
         "13": "import - Импортировать заметки.",
         "14": "cleard - Удалить дубликаты заметок.",
-        "15": "append - Добавить заметки в уже существующий файл."
+        "15": "append - Добавить заметки в уже существующий файл.",
+        "16": "savejs - Сохраняет заметки в формате JSON"
 
     }
 
@@ -716,6 +738,10 @@ def main():
                     else:
                         print("Некорректный номер. Попробуйте снова.")
 
+        elif command_input == 'savejs':
+            filename = input("Введите имя файла для сохранения заметок: ")
+            save_notes_json(notes, filename)
+
         elif command_input == 'save':
             filename = input("Введите имя файла для сохранения заметок: ")
             save_notes_to_file(notes, filename)
@@ -759,6 +785,7 @@ def main():
           import : импортирование заметок из файла txt.
           cleard : удаление дубликатов заметок.
           append : добавление заметок в уже существующий файл.
+          savejs : Сохраняет заметки в формате JSON"
           
 
         Работа со временем:
