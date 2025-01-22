@@ -17,19 +17,6 @@ months = {
     "12": "декабря",
 }
 
-init(autoreset=True)
-
-locale.setlocale(locale.LC_TIME, 'ru_RU')
-
-now = datetime.now()
-
-formatted_date = now.strftime("%d-%m-%Y")
-
-GREEN = "\033[92m"
-RESET = "\033[0m"
-
-print(GREEN + "Текущая дата: " + formatted_date + RESET)
-
 
 def display_note_info(note):
     """Функция для отображения информации о заметке."""
@@ -468,6 +455,18 @@ def open_notes_from_file(filename):
         return []
 
 def main():
+    init(autoreset=True)
+
+    locale.setlocale(locale.LC_TIME, 'ru_RU')
+
+    now = datetime.now()
+
+    formatted_date = now.strftime("%d-%m-%Y")
+
+    GREEN = "\033[92m"
+    RESET = "\033[0m"
+
+    print(GREEN + "Текущая дата: " + formatted_date + RESET)
     notes = []
     start_time = datetime.now()
     print(Fore.GREEN + "\nДобро пожаловать в систему заметок. Вход в ждущий режим выполнения команд.")
