@@ -430,6 +430,43 @@ def save_notes_to_file(notes, filename):
     print(f"Заметки успешно сохранены в файл {filename}")
 
 
+def open_notes_from_file(filename):
+    """Загружает заметки из текстового файла."""
+    notes = []
+    current_note = {}
+
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            for line in file:
+                line = line.strip()
+                if line.startswith("Имя пользователя:"):
+                    if current_note:
+                        notes.append(current_note)
+                        current_note = {}
+                    current_note["username"] = line.split(": ", 1)[1]
+                elif line.startswith("Заголовок:"):
+                    current_note["titles"] = [title.strip() for title in line.split(": ", 1)[1].split(",")]
+                elif line.startswith("Описание:"):
+                    current_note["content"] = line.split(": ", 1)[1]
+                elif line.startswith("Статус:"):
+                    current_note["status"] = line.split(": ", 1)[1]
+                elif line.startswith("Дата создания:"):
+                    current_note["created_date"] = line.split(": ", 1)[1]
+                elif line.startswith("Дедлайн:"):
+                    current_note["issue_date"] = line.split(": ", 1)[1]
+
+            if current_note:
+                notes.append(current_note)
+
+        print(f"Заметки успешно загружены из файла {filename}")
+        return notes
+    except FileNotFoundError:
+        print(f"Файл {filename} не найден.")
+        return []
+    except Exception as e:
+        print(f"Произошла ошибка при чтении файла: {e}")
+        return []
+
 def main():
     notes = []
     start_time = datetime.now()
@@ -447,7 +484,8 @@ def main():
         "9": "time - Отобразить оставшееся время до истечения срока заметки.",
         "10": "help - Отобразить это сообщение.",
         "11": "exit - Выйти из программы.",
-        "12": "save - Сохранить заметки в файл."
+        "12": "save - Сохранить заметки в файл.",
+        "13": "open - Импортировать заметки."
 
     }
 
@@ -643,6 +681,13 @@ def main():
         elif command_input == 'save':
             filename = input("Введите имя файла для сохранения заметок: ")
             save_notes_to_file(notes, filename)
+
+        elif command_input == 'open':
+            filename = input("Введите имя файла для загрузки заметок: ")
+            loaded_notes = open_notes_from_file(filename)
+            if loaded_notes:
+                notes.extend(loaded_notes)
+                print(f"Загружено {len(loaded_notes)} заметок.")
 
         elif command_input == 'time':
             if not notes:
