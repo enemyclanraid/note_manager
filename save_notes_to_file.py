@@ -454,6 +454,28 @@ def open_notes_from_file(filename):
         print(f"Произошла ошибка при чтении файла: {e}")
         return []
 
+
+def clear_duplicates(notes):
+    """Удаляет повторяющиеся заметки из списка."""
+    unique_notes = []
+    seen = set()
+    duplicates_removed = 0
+
+    for note in notes:
+        # Создаем уникальный ключ для каждой заметки
+        note_key = (note['username'], tuple(sorted(note['titles'])), note['content'])
+
+        if note_key not in seen:
+            seen.add(note_key)
+            unique_notes.append(note)
+        else:
+            duplicates_removed += 1
+
+    notes[:] = unique_notes  # Обновляем оригинальный список
+
+    print(f"Удалено {duplicates_removed} повторяющихся заметок.")
+    return notes
+
 def main():
     init(autoreset=True)
 
@@ -484,7 +506,8 @@ def main():
         "10": "help - Отобразить это сообщение.",
         "11": "exit - Выйти из программы.",
         "12": "save - Сохранить заметки в файл.",
-        "13": "open - Импортировать заметки."
+        "13": "import - Импортировать заметки.",
+        "14": "cleard - Удалить дубликаты заметок."
 
     }
 
@@ -681,12 +704,16 @@ def main():
             filename = input("Введите имя файла для сохранения заметок: ")
             save_notes_to_file(notes, filename)
 
-        elif command_input == 'open':
+        elif command_input == 'import':
             filename = input("Введите имя файла для загрузки заметок: ")
             loaded_notes = open_notes_from_file(filename)
             if loaded_notes:
                 notes.extend(loaded_notes)
                 print(f"Загружено {len(loaded_notes)} заметок.")
+
+        elif command_input == 'cleard':
+            notes = clear_duplicates(notes)
+            print("Повторяющиеся заметки удалены.")
 
         elif command_input == 'time':
             if not notes:
