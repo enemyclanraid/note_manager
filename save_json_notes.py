@@ -1,6 +1,8 @@
 import locale
 from datetime import datetime
 from colorama import Fore, Style, init
+import json
+import yaml
 
 months = {
     "01": "января",
@@ -16,19 +18,6 @@ months = {
     "11": "ноября",
     "12": "декабря",
 }
-
-init(autoreset=True)
-
-locale.setlocale(locale.LC_TIME, 'ru_RU')
-
-now = datetime.now()
-
-formatted_date = now.strftime("%d-%m-%Y")
-
-GREEN = "\033[92m"
-RESET = "\033[0m"
-
-print(GREEN + "Текущая дата: " + formatted_date + RESET)
 
 
 def display_note_info(note):
@@ -413,7 +402,103 @@ def search_notes(notes, keyword=None, status=None):
     return found_notes
 
 
+def append_notes_to_file(notes, filename):
+    """Добавляет список заметок в файл в формате YAML."""
+    try:
+        existing_notes = []
+        try:
+            with open(filename, 'r', encoding='utf-8') as file:
+                existing_notes = yaml.safe_load(file) or []
+        except FileNotFoundError:
+            print(f"Файл {filename} не найден. Будет создан новый файл.")
+        except yaml.YAMLError as e:
+            print(f"Ошибка чтения YAML из файла {filename}: {e}")
+            return
+
+        for note in notes:
+            note['status'] = note['status'].replace('\033[92m', '').replace('\033[93m', '').replace('\033[31m',
+                                                                                                    '').replace(
+                '\033[0m', '')
+
+        existing_notes.extend(notes)
+
+        with open(filename, 'w', encoding='utf-8') as file:
+            yaml.dump(existing_notes, file, allow_unicode=True, sort_keys=False)
+
+        print(f"Заметки успешно добавлены в файл {filename}")
+    except Exception as e:
+        print(f"Произошла ошибка при добавлении заметок в файл: {e}")
+
+
+def save_notes_json(notes, filename):
+    """Сохраняет список заметок в JSON файл."""
+    json_notes = []
+    for note in notes:
+        json_note = {
+            "username": note["username"],
+            "title": ", ".join(note["titles"]),
+            "content": note["content"],
+            "status": note["status"].replace('\033[92m', '').replace('\033[93m', '').replace('\033[31m', '').replace(
+                '\033[0m', ''),
+            "created_date": note["created_date"],
+            "issue_date": note["issue_date"]
+        }
+        json_notes.append(json_note)
+
+    with open(filename, 'w', encoding='utf-8') as file:
+        json.dump(json_notes, file, ensure_ascii=False, indent=4)
+
+    print(f"Заметки успешно сохранены в файл {filename} в формате JSON")
+
+
+def save_notes_to_file(notes, filename):
+    """Сохраняет список заметок в файл в формате YAML."""
+    for note in notes:
+        note['status'] = note['status'].replace('\033[92m', '').replace('\033[93m', '').replace('\033[31m', '').replace(
+            '\033[0m', '')
+
+    with open(filename, 'w', encoding='utf-8') as file:
+        yaml.dump(notes, file, allow_unicode=True, sort_keys=False)
+
+    print(f"Заметки успешно сохранены в файл {filename}")
+
+
+def open_notes_from_file(filename):
+    """Загружает заметки из файла в формате YAML."""
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            notes = yaml.safe_load(file)
+
+        if not isinstance(notes, list):
+            print(f"Файл {filename} не содержит корректный формат заметок.")
+            return []
+
+        print(f"Заметки успешно загружены из файла {filename}")
+        return notes
+    except FileNotFoundError:
+        print(f"Файл {filename} не найден.")
+        return []
+    except yaml.YAMLError as e:
+        print(f"Ошибка чтения YAML из файла {filename}: {e}")
+        return []
+    except Exception as e:
+        print(f"Произошла ошибка при чтении файла: {e}")
+        return []
+
+
 def main():
+    init(autoreset=True)
+
+    locale.setlocale(locale.LC_TIME, 'ru_RU')
+
+    now = datetime.now()
+
+    formatted_date = now.strftime("%d-%m-%Y")
+
+    GREEN = "\033[92m"
+    RESET = "\033[0m"
+
+    print(GREEN + "Текущая дата: " + formatted_date + RESET)
     notes = []
     start_time = datetime.now()
     print(Fore.GREEN + "\nДобро пожаловать в систему заметок. Вход в ждущий режим выполнения команд.")
@@ -429,7 +514,13 @@ def main():
         "8": "search - Поиск заметок по ключевым словам.",
         "9": "time - Отобразить оставшееся время до истечения срока заметки.",
         "10": "help - Отобразить это сообщение.",
-        "11": "exit - Выйти из программы."
+        "11": "exit - Выйти из программы.",
+        "12": "save - Сохранить заметки в файл.",
+        "13": "import - Импортировать заметки.",
+        "14": "cleard - Удалить дубликаты заметок.",
+        "15": "append - Добавить заметки в уже существующий файл.",
+        "16": "savejs - Сохраняет заметки в формате JSON"
+
     }
 
     while True:
@@ -621,6 +712,26 @@ def main():
                     else:
                         print("Некорректный номер. Попробуйте снова.")
 
+        elif command_input == 'savejs':
+            filename = input("Введите имя файла для сохранения заметок: ")
+            save_notes_json(notes, filename)
+
+        elif command_input == 'save':
+            filename = input("Введите имя файла для сохранения заметок: ")
+            save_notes_to_file(notes, filename)
+
+        elif command_input == 'append':
+            filename = input("Введите имя файла для сохранения заметок: ")
+            append_notes_to_file(notes, filename)
+
+        elif command_input == 'import':
+            filename = input("Введите имя файла для загрузки заметок: ")
+            loaded_notes = open_notes_from_file(filename)
+            if loaded_notes:
+                notes.extend(loaded_notes)
+                print(f"Загружено {len(loaded_notes)} заметок.")
+
+
         elif command_input == 'time':
             if not notes:
                 print("\nНет заметок для проверки времени.")
@@ -641,6 +752,11 @@ def main():
           status : изменить статус существующих заметок.
           update : обновить существующие заметки.
           search : поиск заметок по ключевым словам.
+          save   : сохранение текущих заметок.
+          import : импортирование заметок из файла txt.          
+          append : добавление заметок в уже существующий файл.
+          savejs : Сохраняет заметки в формате JSON.
+
 
         Работа со временем:
           time   : отобразить оставшееся время до истечения срока заметки.
@@ -655,6 +771,7 @@ def main():
             break
         else:
             print(Fore.RED + "Некорректная команда. Попробуйте снова.")
+
 
 if __name__ == "__main__":
     main()
