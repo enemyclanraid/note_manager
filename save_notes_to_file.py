@@ -640,7 +640,7 @@ def main():
             search_notes(notes, keyword if keyword else None, status)
 
         elif command_input == 'delete':
-            delete_note(notes)
+            delete_note(notes) # test
 
         elif command_input == 'retry':
             if not notes:
