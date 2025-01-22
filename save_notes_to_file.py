@@ -2,6 +2,7 @@ import locale
 from datetime import datetime
 from colorama import Fore, Style, init
 import json
+import yaml
 
 months = {
     "01": "января",
@@ -400,21 +401,33 @@ def search_notes(notes, keyword=None, status=None):
 
     return found_notes
 
-def append_notes_to_file(notes, filename):
-    """Сохраняет список заметок в текстовый файл."""
-    with open(filename, 'a', encoding='utf-8') as file:
-        for note in notes:
-            file.write(f"Имя пользователя: {note['username']}\n")
-            file.write(f"Заголовок: {', '.join(note['titles'])}\n")
-            file.write(f"Описание: {note['content']}\n")
-            status = note['status'].replace('\033[92m', '').replace('\033[93m', '').replace('\033[31m', '').replace(
-                '\033[0m', '')
-            file.write(f"Статус: {status}\n")
-            file.write(f"Дата создания: {note['created_date']}\n")
-            file.write(f"Дедлайн: {note['issue_date']}\n")
-            file.write("----------------------------\n\n")
 
-    print(f"Заметки успешно сохранены в файл {filename}")
+def append_notes_to_file(notes, filename):
+    """Добавляет список заметок в файл в формате YAML."""
+    try:
+        existing_notes = []
+        try:
+            with open(filename, 'r', encoding='utf-8') as file:
+                existing_notes = yaml.safe_load(file) or []
+        except FileNotFoundError:
+            print(f"Файл {filename} не найден. Будет создан новый файл.")
+        except yaml.YAMLError as e:
+            print(f"Ошибка чтения YAML из файла {filename}: {e}")
+            return
+
+        for note in notes:
+            note['status'] = note['status'].replace('\033[92m', '').replace('\033[93m', '').replace('\033[31m',
+                                                                                                    '').replace(
+                '\033[0m', '')
+
+        existing_notes.extend(notes)
+
+        with open(filename, 'w', encoding='utf-8') as file:
+            yaml.dump(existing_notes, file, allow_unicode=True, sort_keys=False)
+
+        print(f"Заметки успешно добавлены в файл {filename}")
+    except Exception as e:
+        print(f"Произошла ошибка при добавлении заметок в файл: {e}")
 
 
 def save_notes_json(notes, filename):
@@ -437,55 +450,36 @@ def save_notes_json(notes, filename):
 
     print(f"Заметки успешно сохранены в файл {filename} в формате JSON")
 
+
 def save_notes_to_file(notes, filename):
-    """Сохраняет список заметок в текстовый файл."""
+    """Сохраняет список заметок в файл в формате YAML."""
+    for note in notes:
+        note['status'] = note['status'].replace('\033[92m', '').replace('\033[93m', '').replace('\033[31m', '').replace(
+            '\033[0m', '')
+
     with open(filename, 'w', encoding='utf-8') as file:
-        for note in notes:
-            file.write(f"Имя пользователя: {note['username']}\n")
-            file.write(f"Заголовок: {', '.join(note['titles'])}\n")
-            file.write(f"Описание: {note['content']}\n")
-            status = note['status'].replace('\033[92m', '').replace('\033[93m', '').replace('\033[31m', '').replace(
-                '\033[0m', '')
-            file.write(f"Статус: {status}\n")
-            file.write(f"Дата создания: {note['created_date']}\n")
-            file.write(f"Дедлайн: {note['issue_date']}\n")
-            file.write("----------------------------\n\n")
+        yaml.dump(notes, file, allow_unicode=True, sort_keys=False)
 
     print(f"Заметки успешно сохранены в файл {filename}")
 
 
 def open_notes_from_file(filename):
-    """Загружает заметки из текстового файла."""
-    notes = []
-    current_note = {}
-
+    """Загружает заметки из файла в формате YAML."""
     try:
         with open(filename, 'r', encoding='utf-8') as file:
-            for line in file:
-                line = line.strip()
-                if line.startswith("Имя пользователя:"):
-                    if current_note:
-                        notes.append(current_note)
-                        current_note = {}
-                    current_note["username"] = line.split(": ", 1)[1]
-                elif line.startswith("Заголовок:"):
-                    current_note["titles"] = [title.strip() for title in line.split(": ", 1)[1].split(",")]
-                elif line.startswith("Описание:"):
-                    current_note["content"] = line.split(": ", 1)[1]
-                elif line.startswith("Статус:"):
-                    current_note["status"] = line.split(": ", 1)[1]
-                elif line.startswith("Дата создания:"):
-                    current_note["created_date"] = line.split(": ", 1)[1]
-                elif line.startswith("Дедлайн:"):
-                    current_note["issue_date"] = line.split(": ", 1)[1]
+            notes = yaml.safe_load(file)
 
-            if current_note:
-                notes.append(current_note)
+        if not isinstance(notes, list):
+            print(f"Файл {filename} не содержит корректный формат заметок.")
+            return []
 
         print(f"Заметки успешно загружены из файла {filename}")
         return notes
     except FileNotFoundError:
         print(f"Файл {filename} не найден.")
+        return []
+    except yaml.YAMLError as e:
+        print(f"Ошибка чтения YAML из файла {filename}: {e}")
         return []
     except Exception as e:
         print(f"Произошла ошибка при чтении файла: {e}")
