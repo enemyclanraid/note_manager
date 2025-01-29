@@ -26,7 +26,6 @@ def create_note():
 
     content = input("Введите описание заметки: ")
 
-    # Статус и другие поля...
 
     return {
         "username": username,
