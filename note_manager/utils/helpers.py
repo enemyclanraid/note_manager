@@ -26,6 +26,7 @@ def create_notes(notes):
     print(Fore.GREEN + "Создание заметок завершено.")
     return notes
 
+#====== вспомогательные функции вызова команд
 
 def save_notes_json(notes):
     filename = input("Введите имя файла для сохранения заметок: ")
@@ -46,6 +47,8 @@ def import_notes(notes):
         notes.extend(loaded_notes)
         print(f"Загружено {len(loaded_notes)} заметок.")
     return notes
+
+#====== вспомогательные функции вызова команд
 
 def clear_duplicates(notes):
     notes = cleard_duplicates(notes)
