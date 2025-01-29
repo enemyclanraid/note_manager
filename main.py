@@ -2,6 +2,7 @@ import locale
 from datetime import datetime
 from colorama import Fore, Style, init
 import note_manager.utils.helpers as helpers
+import note_manager.interface.user_interface as interface
 from note_manager.tests.test_notes import run_tests
 
 
@@ -54,31 +55,31 @@ def main():
             notes = helpers.create_notes(notes)
 
         elif command_input == 'list':
-            helpers.list_notes(notes)
+            interface.list_notes(notes)
 
         elif command_input == 'table':
-            helpers.table_notes(notes)
+            interface.table_notes(notes)
 
         elif command_input == 'delete':
             helpers.delete_note(notes)
 
         elif command_input == 'retry':
-            helpers.edit_note(notes)
+            interface.edit_note(notes)
 
         elif command_input == 'status':
-            helpers.update_note_status(notes)
+            interface.update_note_status(notes)
 
         elif command_input == 'update':
-            helpers.update_note(notes)
+            interface.update_note(notes)
 
         elif command_input == 'search':
-            helpers.search_command(notes)
+            interface.search_command(notes)
 
         elif command_input == 'time':
-            helpers.show_remaining_time(notes)
+            interface.show_remaining_time(notes)
 
         elif command_input == 'help':
-            helpers.show_help()
+            interface.show_help()
 
         elif command_input == 'exit':
             print(Fore.RED + "Выход из системы.")
